@@ -89,7 +89,7 @@ class Skalasisasi:
             maksimal = data[col].max()
             minimum = data[col].min()
             delta = maksimal - minimum
-            data[kolom] = data[kolom].apply(lambda x : (x-minimum)/delta)
+            data[col] = data[col].apply(lambda x : abs((x-minimum))/delta)
         
         return data
     
@@ -99,7 +99,7 @@ class Skalasisasi:
         for col in kolom:
             mean = data[col].mean()
             std = data[col].std()
-            data[kolom] = data[kolom].apply(lambda x : (x-mean)/std)
+            data[col] = data[col].apply(lambda x : (x-mean)/std)
         
         return data
 

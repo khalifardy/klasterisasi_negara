@@ -118,9 +118,15 @@ class DBscan:
         self.__minpts = minpts
         self.__cluster = {}
         self.__label = None
+        self.__jarak = []
     
     @property
     def label(self):
+        #ini hanya dekorator
+        pass
+    
+    @property
+    def jarak(self):
         #ini hanya dekorator
         pass
     
@@ -138,6 +144,7 @@ class DBscan:
             for index,value in enumerate(x):
                 if index != init :
                     jarak = euclidian_distance(x[init],value)
+                    self.__jarak.append(jarak)
                     if jarak <= self.__eps:
                         N.append(index)
             
@@ -156,6 +163,7 @@ class DBscan:
                 for idx2,value in enumerate(x):
                     if N[0] != idx2:
                         jarak = euclidian_distance(x[N[0]],value)
+                        self.__jarak.append(jarak)
                         if jarak <= self.__eps:
                             el2.append(idx2)
                 if len(el2)>= self.__minpts:
@@ -191,6 +199,10 @@ class DBscan:
     @label.getter
     def label_(self):
         return self.__label
+    
+    @jarak.getter
+    def jarak_(self):
+        return self.__jarak
 
     
                     
