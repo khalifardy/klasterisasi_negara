@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.decomposition import PCA
 sns.set()
 
 class Visualisasi:
@@ -101,4 +102,26 @@ class Skalasisasi:
             data[kolom] = data[kolom].apply(lambda x : (x-mean)/std)
         
         return data
-            
+
+def visual_data(tipe:str,data:np.ndarray,Label:np.ndarray,ruang:int=2,legend:list=None):
+    data = data.copy()
+    pca = PCA(n_components=ruang)
+    data = pca.fit_transform(data)
+    df = pd.DataFrame(data=data, columns=[f"PCA{i+1}" for i in range(ruang)])
+    df['label'] = list(Label)
+    print(df)
+
+    scatter = plt.scatter(df['PCA1'], df['PCA2'], c=df['label'], cmap='viridis', s=80)
+
+    plt.title(f'Plot Clustering {tipe} ')
+    plt.xlabel('PCA 1')
+    plt.ylabel('PCA 2')
+
+    # Menambahkan legenda
+    if legend:
+        plt.legend(handles=scatter.legend_elements()[0], labels=legend, title='Klaster', loc='upper right')
+    else:
+        plt.legend(*scatter.legend_elements(), title='Klaster', loc='upper right')
+    plt.show()
+
+

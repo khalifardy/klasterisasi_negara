@@ -18,7 +18,7 @@ def elbow_method(model,start_cluster:int,end_cluster:int,data:np.ndarray):
         x.append(x_)
         y.append(insersia)
     
-    plt.plot(x,y,marker='o',linestyle='-')
+    plt.plot(x,y,marker='o',linestyle='--')
     plt.title("Optimal Jumlah Cluster")
     plt.xlabel("cluster")
     plt.ylabel("Sum Square Error")
@@ -49,10 +49,39 @@ def visual_silhoutte(model,start_cluster:int,end_cluster:int,data:np.ndarray):
         siluette_score.append(silhouette_score(data,label))
         no_cluster.append(n)
     
-    plt.plot(no_cluster,siluette_score,marker='o',linestyle='-')
+    plt.plot(no_cluster,siluette_score,marker='o',linestyle='--')
     plt.title("Optimal Jumlah Cluster")
     plt.xlabel("cluster")
     plt.ylabel("Silhouette Score")
     plt.tight_layout()
     plt.show()
+
+def visual_silhoutte_dbms(model,title:str,xlabel:str,start:int,end:int,step:int,data:np.ndarray,minpts:int=None,epsilon:int=None):
+    no_cluster = []
+    siluette_score = []
+    if epsilon and not minpts:
+        for n in range(start,end,step):
+            k = model(epsilon,n)
+            k.fit_predict(data)
+            label = k.label_
+            siluette_score.append(silhouette_score(data,label))
+            no_cluster.append(n)
+    elif minpts and not epsilon:
+        while start!=end:
+            k = model(start,minpts)
+            k.fit_predict(data)
+            label = k.label_
+            siluette_score.append(silhouette_score(data,label))
+            no_cluster.append(start)
+            start += step
+    
+    plt.plot(no_cluster,siluette_score,marker='o',linestyle='--')
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel("Silhouette Score")
+    plt.tight_layout()
+    plt.show()
+
+def silhoutte_skor(label:np.ndarray,data:np.ndarray):
+    return silhouette_score
 

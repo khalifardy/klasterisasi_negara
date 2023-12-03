@@ -105,15 +105,102 @@ class Kmeans:
             for rec in self.__cluster_fit[key]:
                 total += kuadrat_jarak(self.__x[rec],np.array(centroid))
         self.__inersia = total
-        return total
+        return self.__inersia
 
     @label.getter
     def label__(self):
         return self.__label 
 
 
+class DBscan:
+    def __init__(self,eps:float, minpts:int):
+        self.__eps = eps
+        self.__minpts = minpts
+        self.__cluster = {}
+        self.__label = None
+    
+    @property
+    def label(self):
+        #ini hanya dekorator
+        pass
+    
+    def fit(self,x:np.ndarray):
+        cluster = 1
+        visited = []
+        unvisited = [i for i in range(len(x))]
+        noise = []
+        N = []
+        while len(unvisited) != 0:
+            init = np.random.choice(unvisited, 1, replace=False)[0]
+            visited.append(init)
+            unvisited.remove(init)
+            elemen = []
+            for index,value in enumerate(x):
+                if index != init :
+                    jarak = euclidian_distance(x[init],value)
+                    if jarak <= self.__eps:
+                        N.append(index)
+            
+            if len(N) >= self.__minpts:
+                elemen.append(init)
+            else:
+                N = []
+                noise.append(init)
+            
+            while len(N) >0:
+                
+                if N[0] not in visited:
+                    visited.append(N[0])
+                    unvisited.remove(N[0])
+                el2 = []
+                for idx2,value in enumerate(x):
+                    if N[0] != idx2:
+                        jarak = euclidian_distance(x[N[0]],value)
+                        if jarak <= self.__eps:
+                            el2.append(idx2)
+                if len(el2)>= self.__minpts:
+                    for j in el2:
+                        if j not in visited and j not in N and j not in noise:
+                            N.append(j)
+                            
+                found = False
+                for lst in self.__cluster.values():
+                    
+                    if N[0] in lst:
+                        found = True
+                        break
+                if not found  :
+                    elemen.append(N[0])
 
-           
+                N.pop(0)
+            
+            if len(elemen) > 0:
+                self.__cluster[cluster] = elemen
+                cluster += 1
+        self.__cluster[-1] = noise
+    
+    def fit_predict(self,x:np.ndarray):
+        self.fit(x.copy())
+        predict = [None for _ in range(len(x))]
+        for key in self.__cluster.keys():
+            for index in self.__cluster[key]:
+                predict[index] = key
+        self.__label = np.array(predict)
+        return self.__label
+    
+    @label.getter
+    def label_(self):
+        return self.__label
+
+    
+                    
+
+                
+
+
+
+
+
                 
 
             
